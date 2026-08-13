@@ -1,0 +1,82 @@
+{
+  "intent": "FINANCIAL_DATA",
+  "cases": [
+    {
+      "question": "What is the current price of Bitcoin in USD?",
+      "ground_truth": "42137.51",
+      "answers": [
+        {
+          "label": "exact",
+          "text": "42137.51",
+          "tier": "high"
+        },
+        {
+          "label": "formatted",
+          "text": "$42,137.51",
+          "tier": "high"
+        },
+        {
+          "label": "in a sentence",
+          "text": "Bitcoin is currently trading at $42,137.51 USD.",
+          "tier": "high"
+        },
+        {
+          "label": "rounded",
+          "text": "About $42,137",
+          "tier": "mid"
+        },
+        {
+          "label": "stale price",
+          "text": "Bitcoin is trading at $38,904.10.",
+          "tier": "low"
+        },
+        {
+          "label": "refusal",
+          "text": "I cannot provide real-time prices.",
+          "tier": "low"
+        },
+        {
+          "label": "empty-ish",
+          "text": "N/A",
+          "tier": "low"
+        }
+      ]
+    },
+    {
+      "question": "What was Apple's revenue in Q3 2026?",
+      "ground_truth": "Apple reported revenue of $94.9 billion in Q3 2026, up 8% year over year.",
+      "answers": [
+        {
+          "label": "full match",
+          "text": "Apple reported revenue of $94.9 billion in Q3 2026, up 8% year over year.",
+          "tier": "high"
+        },
+        {
+          "label": "paraphrase",
+          "text": "In the third quarter of 2026 Apple posted $94.9B in revenue, an 8% increase from a year earlier.",
+          "tier": "high"
+        },
+        {
+          "label": "correct but bare",
+          "text": "$94.9 billion",
+          "tier": "mid"
+        },
+        {
+          "label": "right shape, wrong number",
+          "text": "Apple reported revenue of $88.2 billion in Q3 2026, up 3% year over year.",
+          "tier": "low"
+        },
+        {
+          "label": "wrong company",
+          "text": "Microsoft reported revenue of $94.9 billion in Q3 2026.",
+          "tier": "low"
+        },
+        {
+          "label": "off-topic",
+          "text": "Apple is a technology company headquartered in Cupertino, California.",
+          "tier": "low"
+        }
+      ]
+    }
+  ]
+}

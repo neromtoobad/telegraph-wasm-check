@@ -1,0 +1,33 @@
+{
+  "intent": "BLIND-SPOT PROBES — most modules fail these",
+  "cases": [
+    {
+      "question": "Is the sentiment of this earnings call bullish or bearish?",
+      "ground_truth": "bullish",
+      "answers": [
+        { "label": "exact label", "text": "bullish", "tier": "high" },
+        { "label": "label in a sentence", "text": "The overall sentiment of the call is bullish.", "tier": "high" },
+        { "label": "synonym", "text": "positive", "tier": "mid" },
+        { "label": "antonym", "text": "bearish", "tier": "low" },
+        { "label": "hedged non-answer", "text": "It could be either depending on interpretation.", "tier": "low" }
+      ]
+    },
+    {
+      "question": "Is this URL safe to visit?",
+      "ground_truth": "scam",
+      "answers": [
+        { "label": "exact label", "text": "scam", "tier": "high" },
+        { "label": "synonym", "text": "fraudulent", "tier": "mid" },
+        { "label": "antonym", "text": "safe", "tier": "low" }
+      ]
+    },
+    {
+      "question": "Summarise the paper's finding.",
+      "ground_truth": "The treatment reduced mortality by 30% relative to placebo.",
+      "answers": [
+        { "label": "correct", "text": "Mortality fell 30% versus placebo under the treatment.", "tier": "high" },
+        { "label": "negated", "text": "The treatment increased mortality by 30% relative to placebo.", "tier": "low" }
+      ]
+    }
+  ]
+}
