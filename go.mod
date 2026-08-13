@@ -1,4 +1,4 @@
-module github.com/nerom/telegraph-wasm-check
+module github.com/neromtoobad/telegraph-wasm-check
 
 go 1.22.0
 

@@ -3,6 +3,13 @@
 Validate a Telegraph scoring module before you spend gas registering it.
 
 ```bash
+go install github.com/neromtoobad/telegraph-wasm-check@latest
+telegraph-wasm-check module.wasm
+```
+
+Or from a clone:
+
+```bash
 go run . module.wasm
 ```
 
