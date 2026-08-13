@@ -104,21 +104,26 @@ only thing the leaderboard consumes.
 
 ### Blind-spot probes
 
-`examples/hard.json` collects cases that most modules get wrong. It is meant to fail — run
-it to find out where your module is weak, not to pass it.
-
-The reference module fails all three:
+`examples/hard.json` collects cases that surface-similarity scoring gets wrong by default.
+Run it to find where your module is weak.
 
 | case | what it exposes |
 |---|---|
-| `bullish` vs `positive` / `bearish` | the antonym shares characters with the truth; the synonym shares none, so the *opposite* answer outranks the correct one |
+| `bullish` vs `positive` / `bearish` | the antonym shares the `ish` trigram with the truth; the synonym shares no characters, so the *opposite* answer outranks the correct one |
 | `scam` vs `fraudulent` / `safe` | same shape, security labels |
-| "reduced mortality by 30%" vs "**increased** mortality by 30%" | a negated answer scores **0.938** against the correct paraphrase's **0.903** |
+| "reduced mortality by 30%" vs "**increased** mortality by 30%" | one flipped word inverts the finding while every other token matches |
+
+These are cheap to get wrong and expensive to notice. A scorer with no polarity handling
+rates the negated answer **0.938** against a correct paraphrase's **0.903** — it does not
+merely miss the inversion, it prefers it, and that preference propagates straight into
+routing.
 
 Closed-set label intents (`SENTIMENT_ANALYSIS`, `CONTENT_MODERATION`, `FRAUD_DETECTION`)
-and anything where negation flips meaning are where surface-similarity scoring quietly
-breaks. If your module beats these, it is doing something the character- and token-based
-approaches cannot.
+and anything where negation flips meaning are where this breaks quietly.
+
+Passing the ordering is not the same as understanding the content. A module can rank
+`positive` above `bearish` by pushing the antonym down without ever recognising the
+synonym — worth checking which one yours is doing before you claim the intent.
 
 ## Output
 
