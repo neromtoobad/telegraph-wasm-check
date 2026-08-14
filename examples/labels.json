@@ -119,6 +119,58 @@
           "tier": "low"
         }
       ]
+    },
+    {
+      "question": "Was the Fed's statement hawkish or dovish?",
+      "ground_truth": "hawkish",
+      "answers": [
+        {
+          "label": "exact",
+          "text": "hawkish",
+          "tier": "high"
+        },
+        {
+          "label": "synonym",
+          "text": "The statement leaned restrictive.",
+          "tier": "mid"
+        },
+        {
+          "label": "opposite",
+          "text": "dovish",
+          "tier": "low"
+        },
+        {
+          "label": "opposite-syn",
+          "text": "The tone was accommodative.",
+          "tier": "low"
+        }
+      ]
+    },
+    {
+      "question": "What is the analyst rating on the stock?",
+      "ground_truth": "overweight",
+      "answers": [
+        {
+          "label": "exact",
+          "text": "overweight",
+          "tier": "high"
+        },
+        {
+          "label": "cluster",
+          "text": "Rated a buy.",
+          "tier": "mid"
+        },
+        {
+          "label": "hold-wrong",
+          "text": "hold",
+          "tier": "low"
+        },
+        {
+          "label": "opposite",
+          "text": "underweight",
+          "tier": "low"
+        }
+      ]
     }
   ]
 }
