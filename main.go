@@ -22,11 +22,12 @@ const version = "0.1.0"
 
 func main() {
 	var (
-		casesPath = flag.String("cases", "", "path to a JSON file of ordering assertions for your intent")
-		asJSON    = flag.Bool("json", false, "emit machine-readable JSON instead of a report")
-		strict    = flag.Bool("strict", false, "treat Stage 2 advisories as failures too")
-		noColor   = flag.Bool("no-color", false, "disable ANSI colour")
-		showVer   = flag.Bool("version", false, "print version and exit")
+		casesPath   = flag.String("cases", "", "path to a JSON file of ordering assertions for your intent")
+		comparePath = flag.String("compare", "", "path to a baseline .wasm — score the case file with both modules side by side")
+		asJSON      = flag.Bool("json", false, "emit machine-readable JSON instead of a report")
+		strict      = flag.Bool("strict", false, "treat Stage 2 advisories as failures too")
+		noColor     = flag.Bool("no-color", false, "disable ANSI colour")
+		showVer     = flag.Bool("version", false, "print version and exit")
 	)
 	flag.Usage = usage
 	// Go's flag package stops parsing at the first positional argument, so the natural
@@ -81,14 +82,30 @@ func main() {
 			fmt.Sprintf("%.1f MB", float64(info.Size())/(1<<20)), Hard})
 	}
 	report.Stage2 = RunStage2(m, report)
+	report.Stage2 = append(report.Stage2, RunFuzz(m)...)
+	report.Stage2 = append(report.Stage2, RunPerformance(m)...)
 	report.Stage2 = append(report.Stage2, RunMemoryStability(m)...)
 
+	var cf *CaseFile
 	if *casesPath != "" {
-		cf, err := LoadCases(*casesPath)
+		cf, err = LoadCases(*casesPath)
 		if err != nil {
 			fatal("%v", err)
 		}
 		report.Custom = RunCases(m, cf)
+	}
+
+	var cmp *Comparison
+	if *comparePath != "" {
+		if cf == nil {
+			fatal("--compare needs --cases: the comparison runs both modules over the same case file")
+		}
+		base, err := Load(*comparePath)
+		if err != nil {
+			fatal("baseline module failed to load: %v", err)
+		}
+		defer base.Close()
+		cmp = RunComparison(m, base, cf)
 	}
 
 	exit := 0
@@ -99,11 +116,14 @@ func main() {
 	}
 
 	if *asJSON {
-		emitJSON(report, exit)
+		emitJSONWithComparison(report, cmp, exit)
 		os.Exit(exit)
 	}
 
 	printReport(report, path, info.Size(), m, *casesPath, *strict)
+	if cmp != nil {
+		printComparison(cmp, path, *comparePath)
+	}
 	os.Exit(exit)
 }
 
@@ -158,24 +178,28 @@ func printReport(r *Report, path string, size int64, m *Module, casesPath string
 }
 
 type jsonOut struct {
-	Version  string       `json:"version"`
-	ExitCode int          `json:"exit_code"`
-	Hard     int          `json:"hard_failures"`
-	Soft     int          `json:"soft_failures"`
-	Stage1   []Result     `json:"stage1"`
-	Stage2   []Result     `json:"stage2"`
-	Custom   []Result     `json:"custom,omitempty"`
-	Profile  []ProfileRow `json:"profile,omitempty"`
-	Spread   float64      `json:"spread"`
-	StdDev   float64      `json:"stddev"`
+	Version    string       `json:"version"`
+	ExitCode   int          `json:"exit_code"`
+	Hard       int          `json:"hard_failures"`
+	Soft       int          `json:"soft_failures"`
+	Stage1     []Result     `json:"stage1"`
+	Stage2     []Result     `json:"stage2"`
+	Custom     []Result     `json:"custom,omitempty"`
+	Profile    []ProfileRow `json:"profile,omitempty"`
+	Spread     float64      `json:"spread"`
+	StdDev     float64      `json:"stddev"`
+	Comparison *Comparison  `json:"comparison,omitempty"`
 }
 
-func emitJSON(r *Report, exit int) {
+func emitJSON(r *Report, exit int) { emitJSONWithComparison(r, nil, exit) }
+
+func emitJSONWithComparison(r *Report, cmp *Comparison, exit int) {
 	out := jsonOut{
 		Version: version, ExitCode: exit,
 		Hard: r.hardFailures(), Soft: r.softFailures(),
 		Stage1: r.Stage1, Stage2: r.Stage2, Custom: r.Custom,
 		Profile: r.Profile, Spread: r.Spread, StdDev: r.StdDev,
+		Comparison: cmp,
 	}
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
@@ -228,7 +252,7 @@ func bar(v float64) string {
 
 // valueFlags are the flags that consume the following argument, so it is not mistaken
 // for the positional module path.
-var valueFlags = map[string]bool{"-cases": true, "--cases": true}
+var valueFlags = map[string]bool{"-cases": true, "--cases": true, "-compare": true, "--compare": true}
 
 func reorderArgs(args []string) []string {
 	var flags, positional []string

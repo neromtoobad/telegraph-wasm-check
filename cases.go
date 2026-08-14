@@ -124,7 +124,9 @@ func RunCases(m *Module, cf *CaseFile) []Result {
 		if worst == "" {
 			out = append(out, Result{truncate(c.Question, 44), true, order, Hard})
 		} else {
-			out = append(out, Result{truncate(c.Question, 44), false, worst, Hard})
+			// Include the full ordering on failure too — the worst inversion names the
+			// pair to look at, but debugging needs the whole ranking in one glance.
+			out = append(out, Result{truncate(c.Question, 44), false, worst + "  |  " + order, Hard})
 		}
 	}
 	return out

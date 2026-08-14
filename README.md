@@ -132,6 +132,48 @@ Passing the ordering is not the same as understanding the content. A module can 
 `positive` above `bearish` by pushing the antonym down without ever recognising the
 synonym — worth checking which one yours is doing before you claim the intent.
 
+## Comparing against a baseline
+
+Track 2's largest criterion (50%) is *improvement over the current Canonical Script*.
+That claim needs evidence, and the evidence is a side-by-side run:
+
+```bash
+telegraph-wasm-check candidate.wasm --cases bench.json --compare baseline.wasm
+```
+
+Both modules score every case; the report shows each module's ordering per case, which
+cases the candidate **resolves** (orders correctly where the baseline doesn't), which it
+**regresses** (the honest column — a comparison that can't show regressions can't be
+trusted on improvements either), and a pairwise ranking-agreement figure that flags cases
+both modules "pass" but rank for different reasons.
+
+Sample tail, candidate vs the docs' word-overlap example module:
+
+```
+  candidate:             9/9 cases ordered correctly
+  baseline:              0/9 cases ordered correctly
+
+  resolved by candidate (9): ...
+```
+
+The comparison is only as meaningful as the case file — cases you wrote to showcase your
+own module prove less than cases drawn from real miner traffic. When the Canonical Script
+for your intent is published, point `--compare` at it and let the same command make the
+case.
+
+## Fuzz, performance and memory
+
+Beyond the fixtures, every run now includes:
+
+- **Seeded fuzz** — 500 reproducible random triples (mixed words, numbers, CJK, emoji,
+  JSON fragments, null bytes). No trap, all scores finite in `[0,1]`, empty answer exactly
+  0 against *any* inputs, determinism on random data. A failure reports the iteration
+  number; seed 42 replays it anywhere.
+- **Worst-case performance** — 128 KiB inputs (the host cap), warn above 100 ms/call.
+  Spot checks fire every ~20 s; a slow scorer is a node liveness problem, not just slow.
+- **Memory stability** — 300 calls with no dealloc, warn on sustained per-call growth
+  (see above).
+
 ## Output
 
 ```
