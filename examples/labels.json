@@ -1,0 +1,124 @@
+{
+  "intent": "CLOSED-SET LABEL PROBES \u2014 sentiment, security verdicts, AI detection",
+  "cases": [
+    {
+      "question": "Is the sentiment of this earnings call bullish or bearish?",
+      "ground_truth": "bullish",
+      "answers": [
+        {
+          "label": "exact",
+          "text": "bullish",
+          "tier": "high"
+        },
+        {
+          "label": "in-sentence",
+          "text": "The overall sentiment of the call is bullish.",
+          "tier": "high"
+        },
+        {
+          "label": "synonym-positive",
+          "text": "positive",
+          "tier": "mid"
+        },
+        {
+          "label": "synonym-upbeat",
+          "text": "The tone was distinctly upbeat.",
+          "tier": "mid"
+        },
+        {
+          "label": "neutral-wrong",
+          "text": "neutral",
+          "tier": "low"
+        },
+        {
+          "label": "antonym",
+          "text": "bearish",
+          "tier": "low"
+        },
+        {
+          "label": "cross-antonym",
+          "text": "pessimistic",
+          "tier": "low"
+        },
+        {
+          "label": "unrelated",
+          "text": "tractor",
+          "tier": "low"
+        },
+        {
+          "label": "hedge",
+          "text": "It could be either depending on interpretation.",
+          "tier": "low"
+        }
+      ]
+    },
+    {
+      "question": "Is this URL safe to visit?",
+      "ground_truth": "scam",
+      "answers": [
+        {
+          "label": "exact",
+          "text": "scam",
+          "tier": "high"
+        },
+        {
+          "label": "synonym",
+          "text": "fraudulent",
+          "tier": "mid"
+        },
+        {
+          "label": "cluster-phishing",
+          "text": "This looks like a phishing site.",
+          "tier": "mid"
+        },
+        {
+          "label": "opposite",
+          "text": "safe",
+          "tier": "low"
+        },
+        {
+          "label": "opposite-legit",
+          "text": "The site appears legitimate.",
+          "tier": "low"
+        }
+      ]
+    },
+    {
+      "question": "Was this essay written by AI or a human?",
+      "ground_truth": "ai",
+      "answers": [
+        {
+          "label": "exact",
+          "text": "ai",
+          "tier": "high"
+        },
+        {
+          "label": "synonym",
+          "text": "This text appears machine generated.",
+          "tier": "mid"
+        },
+        {
+          "label": "opposite",
+          "text": "human",
+          "tier": "low"
+        }
+      ]
+    },
+    {
+      "question": "Summarise the analyst's view of the stock.",
+      "ground_truth": "The analyst maintains a positive outlook on the stock, citing strong margins and growing demand.",
+      "answers": [
+        {
+          "label": "paraphrase",
+          "text": "The analyst remains positive on the stock thanks to strong margins and rising demand.",
+          "tier": "high"
+        },
+        {
+          "label": "prose-guard: one-word label",
+          "text": "positive",
+          "tier": "low"
+        }
+      ]
+    }
+  ]
+}
