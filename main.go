@@ -81,6 +81,7 @@ func main() {
 			fmt.Sprintf("%.1f MB", float64(info.Size())/(1<<20)), Hard})
 	}
 	report.Stage2 = RunStage2(m, report)
+	report.Stage2 = append(report.Stage2, RunMemoryStability(m)...)
 
 	if *casesPath != "" {
 		cf, err := LoadCases(*casesPath)

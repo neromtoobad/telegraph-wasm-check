@@ -262,6 +262,67 @@ func RunDeterminism(m *Module, path string) []Result {
 	return out
 }
 
+// RunMemoryStability calls the module many times with large inputs and NEVER calls
+// dealloc, then watches linear-memory growth.
+//
+// Why this is worth 300 calls of runtime: a module built on a general-purpose allocator
+// (Rust's global allocator, malloc) only reclaims memory if the host actually calls
+// dealloc after every scoring call — and whether the node does that is not observable
+// from outside. Measured on a real module, the leaky version grew ~200 KB per call:
+// it passes every published Stage 1 gate, then traps on linear-memory exhaustion after
+// ~20k calls — a few days of spot-check traffic on a long-lived instance. A wrap-around
+// bump allocator over a fixed region (as in the docs' own example) is bounded no matter
+// what the host does.
+//
+// Advisory rather than hard, because a std-alloc module is correct under a host that
+// deallocs. But the detail message says what is at stake.
+func RunMemoryStability(m *Module) []Result {
+	var out []Result
+
+	big := strings.Repeat("stress payload for memory growth measurement ", 2300) // ~103 KB
+	const q = "memory stability probe"
+
+	warm := 20
+	measured := 280
+
+	for i := 0; i < warm; i++ {
+		if _, err := m.Score(q, big, big); err != nil {
+			return append(out, Result{"memory: survives sustained calls", false,
+				fmt.Sprintf("trapped during warmup call %d: %v", i, err), Hard})
+		}
+	}
+	before := m.MemorySize()
+	for i := 0; i < measured; i++ {
+		if _, err := m.Score(q, big, big); err != nil {
+			return append(out, Result{"memory: survives sustained calls", false,
+				fmt.Sprintf("trapped at call %d: %v", warm+i, err), Hard})
+		}
+	}
+	after := m.MemorySize()
+
+	growth := int64(after) - int64(before)
+	perCall := growth / int64(measured)
+
+	// A bounded allocator settles to zero growth after warmup. Anything above ~4 KB/call
+	// sustained is the signature of per-call leakage.
+	ok := perCall < 4*1024
+	detail := fmt.Sprintf("%d calls, no dealloc: %+.1f MB total, ~%d KB/call", warm+measured,
+		float64(growth)/(1<<20), perCall/1024)
+	if !ok {
+		detail += fmt.Sprintf(" — at this rate the module traps after ~%dk calls if the host never deallocs",
+			(4<<30)/max64(perCall, 1)/1000)
+	}
+	out = append(out, Result{"memory: bounded under sustained calls without dealloc", ok, detail, Soft})
+	return out
+}
+
+func max64(a, b int64) int64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 // RunOptional reports which optional exports are present. Nothing here affects whether a
 // module passes; embed and rank_answer_cached are checked independently by the node, so
 // implementing exactly one of the pair is the one arrangement worth flagging.

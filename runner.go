@@ -73,6 +73,14 @@ func (m *Module) Close() {
 
 func (m *Module) HasMemory() bool { return m.mem != nil }
 
+// MemorySize returns the module's current linear-memory size in bytes.
+func (m *Module) MemorySize() uint32 {
+	if m.mem == nil {
+		return 0
+	}
+	return m.mem.Size()
+}
+
 // write hands a string to the module. Empty strings are passed as a (0, 0) null pair
 // rather than a zero-length allocation, matching how a host avoids a pointless alloc.
 func (m *Module) write(s string) (uint32, uint32, error) {
