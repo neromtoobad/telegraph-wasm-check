@@ -78,6 +78,12 @@ func RunStage1(m *Module) []Result {
 	add("exports alloc", m.Alloc != nil, "")
 	add("exports dealloc", m.Dealloc != nil, "")
 	add("exports rank_answer", m.Rank != nil, "")
+	// The scoring docs call breakdown_answer optional ("safe to omit"). The integration
+	// platform disagrees: its WASM wizard states modules "must export rank_answer,
+	// breakdown_answer, alloc, dealloc, and linear memory — invalid modules are rejected
+	// on arrival." The platform is the gate that actually runs, so this is Hard here.
+	add("exports breakdown_answer", m.Breakdown != nil,
+		"required by the integration platform; docs calling it optional are stale")
 	if !m.HasMemory() || m.Rank == nil || m.Alloc == nil {
 		return out
 	}
@@ -328,9 +334,7 @@ func max64(a, b int64) int64 {
 // implementing exactly one of the pair is the one arrangement worth flagging.
 func RunOptional(m *Module) []string {
 	var notes []string
-	if m.Breakdown != nil {
-		notes = append(notes, "breakdown_answer present (debug introspection)")
-	}
+	// breakdown_answer moved to Stage 1: the integration platform requires it.
 	switch {
 	case m.Embed != nil && m.Cached != nil:
 		notes = append(notes, "embed + rank_answer_cached present (Stage 2 replay speedup)")

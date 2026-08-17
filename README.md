@@ -200,9 +200,19 @@ Minimum viable export surface, in any language that compiles to freestanding
 | `dealloc` | `(ptr: i32, size: i32)` |
 | `rank_answer` | `(q_ptr, q_len, gt_ptr, gt_len, ma_ptr, ma_len: i32) -> f32` |
 
-`breakdown_answer`, `embed` and `rank_answer_cached` are optional and have no effect on
-whether you pass. `embed` and `rank_answer_cached` are checked independently by the node,
-so implement both or neither — this tool warns if you ship exactly one.
+**`breakdown_answer` is required in practice.** The scoring docs call it optional, but the
+integration platform's WASM wizard states modules must export `rank_answer`,
+`breakdown_answer`, `alloc`, `dealloc` and linear memory — "invalid modules are rejected
+on arrival." This tool checks it as a hard requirement. Its shape: returns a pointer to 5
+consecutive `f32`s `[relevance, correctness, lexical, length_quality, composite]`.
+
+`embed` and `rank_answer_cached` remain optional and are checked independently by the
+node, so implement both or neither — this tool warns if you ship exactly one.
+
+Registration details confirmed from the platform source: the WASM hash is **keccak256**
+of the file bytes (miner YAML registration uses SHA-256 — do not mix them up), the file
+is pinned to IPFS, and `registerWasm(wasmHash, wasmUrl, intent)` binds the module to a
+named canonical intent.
 
 The three strings are standardised before they reach your module: `question` is the query,
 `ground_truth` the correct answer, `miner_answer` what the miner generated. You will not
