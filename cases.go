@@ -68,6 +68,24 @@ type scored struct {
 // RunCases scores every answer in every case and reports each tier boundary that the
 // module got backwards. Failures are Hard: an author asserting their own intent's
 // semantics is making a stronger claim than any generic probe can.
+var caseMargins []float64
+
+// CaseMarginSummary returns (mean, min) worst-pair high-low gap across the cases run so
+// far, or (0,0) if none had both tiers.
+func CaseMarginSummary() (float64, float64) {
+	if len(caseMargins) == 0 {
+		return 0, 0
+	}
+	mean, min := 0.0, caseMargins[0]
+	for _, g := range caseMargins {
+		mean += g
+		if g < min {
+			min = g
+		}
+	}
+	return mean / float64(len(caseMargins)), min
+}
+
 func RunCases(m *Module, cf *CaseFile) []Result {
 	var out []Result
 
@@ -110,6 +128,23 @@ func RunCases(m *Module, cf *CaseFile) []Result {
 					}
 				}
 			}
+		}
+
+		// Margin: how clearly the module separates tiers on this case. The promotion
+		// contest ranks by exactly this ("how clearly this module separates good answers
+		// from bad ones"), so report the worst-pair gap: min(high) - max(low). Ordering
+		// can be perfect while the gap is razor-thin; the gap is what wins the slot.
+		minHigh, maxLow := 2.0, -1.0
+		for _, a := range all {
+			if tierRank[a.Tier] == 2 && a.score < minHigh {
+				minHigh = a.score
+			}
+			if tierRank[a.Tier] == 0 && a.score > maxLow {
+				maxLow = a.score
+			}
+		}
+		if minHigh <= 1.0 && maxLow >= 0.0 {
+			caseMargins = append(caseMargins, minHigh-maxLow)
 		}
 
 		sort.SliceStable(all, func(i, j int) bool { return all[i].score > all[j].score })

@@ -153,6 +153,9 @@ func printReport(r *Report, path string, size int64, m *Module, casesPath string
 		for _, x := range r.Custom {
 			line(x)
 		}
+		if mean, min := CaseMarginSummary(); mean > 0 || min != 0 {
+			fmt.Printf("\n      margin (min high − max low per case): mean %.4f · worst %.4f\n", mean, min)
+		}
 	}
 
 	fmt.Printf("\noptional exports:\n")
