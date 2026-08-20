@@ -1,0 +1,41 @@
+{
+  "intent": "FINANCIAL_DATA — unit and format equivalence",
+  "cases": [
+    {
+      "question": "What was Apple's revenue in the quarter?",
+      "ground_truth": "94.9 billion",
+      "answers": [
+        { "label": "same words", "text": "94.9 billion", "tier": "high" },
+        { "label": "suffix B", "text": "$94.9B", "tier": "high" },
+        { "label": "suffix bn", "text": "94.9bn", "tier": "high" },
+        { "label": "expanded", "text": "$94,900,000,000", "tier": "high" },
+        { "label": "in sentence", "text": "Revenue came in at $94.9 billion for the quarter.", "tier": "high" },
+        { "label": "wrong magnitude", "text": "94.9 million", "tier": "low" },
+        { "label": "wrong value", "text": "$88.2 billion", "tier": "low" },
+        { "label": "refusal", "text": "I cannot access earnings data.", "tier": "low" }
+      ]
+    },
+    {
+      "question": "What is the company's profit margin?",
+      "ground_truth": "8%",
+      "answers": [
+        { "label": "exact", "text": "8%", "tier": "high" },
+        { "label": "word form", "text": "8 percent", "tier": "high" },
+        { "label": "fraction form", "text": "0.08", "tier": "high" },
+        { "label": "in sentence", "text": "The margin is 8% this quarter.", "tier": "high" },
+        { "label": "wrong value", "text": "12%", "tier": "low" },
+        { "label": "no answer", "text": "N/A", "tier": "low" }
+      ]
+    },
+    {
+      "question": "What is the market cap of the token?",
+      "ground_truth": "1.2 million",
+      "answers": [
+        { "label": "suffix M", "text": "1.2M", "tier": "high" },
+        { "label": "expanded", "text": "1,200,000", "tier": "high" },
+        { "label": "wrong magnitude", "text": "1.2 billion", "tier": "low" },
+        { "label": "wrong value", "text": "3.4M", "tier": "low" }
+      ]
+    }
+  ]
+}
