@@ -78,12 +78,12 @@ func RunStage1(m *Module) []Result {
 	add("exports alloc", m.Alloc != nil, "")
 	add("exports dealloc", m.Dealloc != nil, "")
 	add("exports rank_answer", m.Rank != nil, "")
-	// The scoring docs call breakdown_answer optional ("safe to omit"). The integration
-	// platform disagrees: its WASM wizard states modules "must export rank_answer,
-	// breakdown_answer, alloc, dealloc, and linear memory — invalid modules are rejected
-	// on arrival." The platform is the gate that actually runs, so this is Hard here.
-	add("exports breakdown_answer", m.Breakdown != nil,
-		"required by the integration platform; docs calling it optional are stale")
+	// The docs call breakdown_answer optional; the platform's wizard says it is required
+	// and "rejected on arrival". Observed reality: the live FINANCIAL_DATA champion
+	// (registration #122) does not export it and was promoted — so the wizard text is
+	// not enforced. Advisory, with the contradiction noted, until one source wins.
+	out = append(out, Result{"exports breakdown_answer", m.Breakdown != nil,
+		"wizard says required, docs say optional; a live champion ships without it", Soft})
 	if !m.HasMemory() || m.Rank == nil || m.Alloc == nil {
 		return out
 	}
