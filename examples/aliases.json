@@ -1,30 +1,57 @@
 {
-  "intent": "FINANCIAL_DATA — ticker/name aliases with sentence-shaped truths",
+  "intent": "FINANCIAL_DATA \u2014 ticker/name aliases with sentence-shaped truths",
   "cases": [
     {
       "question": "what is the market cap of solana",
       "ground_truth": "The market cap of Solana is $47.58 billion.",
       "answers": [
-        { "label": "ticker alias", "text": "SOL market cap is 47.58B", "tier": "high" },
-        { "label": "full name", "text": "Solana market cap is $47.58 billion.", "tier": "high" },
-        { "label": "wrong value", "text": "SOL market cap is 12.4B", "tier": "low" }
+        {
+          "label": "ticker alias",
+          "text": "SOL market cap is 47.58B",
+          "tier": "high"
+        },
+        {
+          "label": "full name",
+          "text": "Solana market cap is $47.58 billion.",
+          "tier": "high"
+        },
+        {
+          "label": "wrong value",
+          "text": "SOL market cap is 12.4B",
+          "tier": "low"
+        }
       ]
     },
     {
       "question": "what is the funding rate on btc perps",
       "ground_truth": "The current BTC perpetual funding rate is 0.01%.",
       "answers": [
-        { "label": "percent word", "text": "Funding is 0.01 percent.", "tier": "high" },
-        { "label": "wrong value", "text": "Funding is 0.45 percent.", "tier": "low" }
+        {
+          "label": "percent word",
+          "text": "Funding is 0.01 percent.",
+          "tier": "high"
+        },
+        {
+          "label": "wrong value",
+          "text": "Funding is 0.45 percent.",
+          "tier": "low"
+        }
       ]
     },
     {
       "question": "what was q3 revenue for apple",
       "ground_truth": "Apple reported Q3 revenue of $3.42 billion.",
       "answers": [
-        { "label": "cross-unit", "text": "Q3 revenue came in at 3,420 million dollars.", "tier": "high" },
-        { "label": "wrong company right number", "text": "Microsoft reported Q3 revenue of $3.42 billion.", "tier": "mid" },
-        { "label": "wrong value", "text": "Q3 revenue came in at 340 million dollars.", "tier": "low" }
+        {
+          "label": "cross-unit",
+          "text": "Q3 revenue came in at 3,420 million dollars.",
+          "tier": "high"
+        },
+        {
+          "label": "wrong value",
+          "text": "Q3 revenue came in at 340 million dollars.",
+          "tier": "low"
+        }
       ]
     }
   ]

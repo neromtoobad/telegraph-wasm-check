@@ -1,32 +1,88 @@
 {
-  "intent": "BLIND-SPOT PROBES — most modules fail these",
+  "intent": "BLIND-SPOT PROBES \u2014 most modules fail these",
   "cases": [
     {
       "question": "Is the sentiment of this earnings call bullish or bearish?",
       "ground_truth": "bullish",
       "answers": [
-        { "label": "exact label", "text": "bullish", "tier": "high" },
-        { "label": "label in a sentence", "text": "The overall sentiment of the call is bullish.", "tier": "high" },
-        { "label": "synonym", "text": "positive", "tier": "mid" },
-        { "label": "antonym", "text": "bearish", "tier": "low" },
-        { "label": "hedged non-answer", "text": "It could be either depending on interpretation.", "tier": "low" }
+        {
+          "label": "exact label",
+          "text": "bullish",
+          "tier": "high"
+        },
+        {
+          "label": "label in a sentence",
+          "text": "The overall sentiment of the call is bullish.",
+          "tier": "high"
+        },
+        {
+          "label": "synonym",
+          "text": "positive",
+          "tier": "mid"
+        },
+        {
+          "label": "antonym",
+          "text": "bearish",
+          "tier": "low"
+        },
+        {
+          "label": "hedged non-answer",
+          "text": "It could be either depending on interpretation.",
+          "tier": "low"
+        }
       ]
     },
     {
       "question": "Is this URL safe to visit?",
       "ground_truth": "scam",
       "answers": [
-        { "label": "exact label", "text": "scam", "tier": "high" },
-        { "label": "synonym", "text": "fraudulent", "tier": "mid" },
-        { "label": "antonym", "text": "safe", "tier": "low" }
+        {
+          "label": "exact label",
+          "text": "scam",
+          "tier": "high"
+        },
+        {
+          "label": "synonym",
+          "text": "fraudulent",
+          "tier": "mid"
+        },
+        {
+          "label": "antonym",
+          "text": "safe",
+          "tier": "low"
+        }
       ]
     },
     {
       "question": "Summarise the paper's finding.",
       "ground_truth": "The treatment reduced mortality by 30% relative to placebo.",
       "answers": [
-        { "label": "correct", "text": "Mortality fell 30% versus placebo under the treatment.", "tier": "high" },
-        { "label": "negated", "text": "The treatment increased mortality by 30% relative to placebo.", "tier": "low" }
+        {
+          "label": "correct",
+          "text": "Mortality fell 30% versus placebo under the treatment.",
+          "tier": "high"
+        },
+        {
+          "label": "negated",
+          "text": "The treatment increased mortality by 30% relative to placebo.",
+          "tier": "low"
+        }
+      ]
+    },
+    {
+      "question": "what was q3 revenue for apple",
+      "ground_truth": "Apple reported Q3 revenue of $3.42 billion.",
+      "answers": [
+        {
+          "label": "cross-unit paraphrase",
+          "text": "Q3 revenue came in at 3,420 million dollars.",
+          "tier": "high"
+        },
+        {
+          "label": "wrong company, exact right number",
+          "text": "Microsoft reported Q3 revenue of $3.42 billion.",
+          "tier": "low"
+        }
       ]
     }
   ]
