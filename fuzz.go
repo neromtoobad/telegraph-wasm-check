@@ -97,6 +97,17 @@ func RunFuzz(m *Module) []Result {
 // of milliseconds per call is a liveness problem for the node running it, not just slow.
 func RunPerformance(m *Module) []Result {
 	big := strings.Repeat("performance measurement corpus token stream ", 2900) // ~127 KB, at the input cap
+	// Distinct-token prose is the shape that killed a live evaluation ("10m48s elapsed"):
+	// repeated-token corpora keep every token-set tiny, hiding quadratic distinct×distinct
+	// work. Generate ~15k UNIQUE tokens so those paths actually run at size.
+	// Crucially the two sides share NO tokens: identical sides let set-membership
+	// short-circuits skip the quadratic work entirely and hide the problem.
+	var da, dbb strings.Builder
+	for i := 0; i < 12000; i++ {
+		fmt.Fprintf(&da, "alpha%dq%d ", i, i%89)
+		fmt.Fprintf(&dbb, "omega%dz%d ", i, i%83)
+	}
+	distinctGT, distinctMA := da.String(), dbb.String()
 	const q = "worst case timing probe"
 
 	// Warm once so instantiation cost isn't billed to the measurement.
@@ -118,5 +129,20 @@ func RunPerformance(m *Module) []Result {
 	if !ok {
 		detail += " — spot checks fire every ~20s; a slow scorer is a node liveness problem"
 	}
-	return []Result{{"performance: worst-case inputs under 100ms", ok, detail, Soft}}
+	out := []Result{{"performance: worst-case inputs under 100ms", ok, detail, Soft}}
+
+	startD := time.Now()
+	for i := 0; i < 5; i++ {
+		if _, err := m.Score(q, distinctGT, distinctMA); err != nil {
+			return append(out, Result{"performance: distinct-token prose completes", false, err.Error(), Hard})
+		}
+	}
+	perD := time.Since(startD) / 5
+	okD := perD < 150*time.Millisecond
+	detailD := fmt.Sprintf("%s per call at ~15k distinct tokens", perD.Round(time.Microsecond*100))
+	if !okD {
+		detailD += " — the live evaluator has killed a module at 10m48s for exactly this shape"
+	}
+	out = append(out, Result{"performance: distinct-token prose under 150ms", okD, detailD, Soft})
+	return out
 }
